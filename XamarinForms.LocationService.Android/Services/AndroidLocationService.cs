@@ -7,6 +7,7 @@ using Xamarin.Forms;
 using XamarinForms.LocationService.Services;
 using XamarinForms.LocationService.Messages;
 using XamarinForms.LocationService.Droid.Helpers;
+using System;
 
 namespace XamarinForms.LocationService.Droid.Services
 {
@@ -31,10 +32,31 @@ namespace XamarinForms.LocationService.Droid.Services
 			Task.Run(() => {
 				try
 				{
-					var locShared = new Location();
-					locShared.Run(_cts.Token).Wait();
+                    for (; !_cts.IsCancellationRequested; )
+                    {
+						Thread.Sleep(5000);
+
+						//현재 시간 구하기
+						DateTime dateTime = DateTime.Now;
+
+						//현재 요일 구하기
+						string date = dateTime.DayOfWeek.ToString();
+
+						if (((dateTime.Hour > 17 && dateTime.Minute > 50) || dateTime.Hour>18) && (date != "Saturday1" || date != "Sunday"))
+                        {
+							var locShared = new Location();
+							locShared.Run(_cts.Token).Wait();
+
+							if (locShared.ForResult > 0.02)
+							{
+
+							}
+						}
+						
+					}
+					
 				}
-				catch (OperationCanceledException)
+				catch (Android.OS.OperationCanceledException)
 				{
 				}
 				finally
