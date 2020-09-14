@@ -8,6 +8,7 @@ using XamarinForms.LocationService.Services;
 using XamarinForms.LocationService.Messages;
 using XamarinForms.LocationService.Droid.Helpers;
 using System;
+using System.Diagnostics;
 
 namespace XamarinForms.LocationService.Droid.Services
 {
@@ -16,6 +17,8 @@ namespace XamarinForms.LocationService.Droid.Services
     {
 		CancellationTokenSource _cts;
         public const int SERVICE_RUNNING_NOTIFICATION_ID = 10023;
+		public bool IsNotiToday = false;
+		public int whatday = 0;
 
         public override IBinder OnBind(Intent intent)
 		{
@@ -34,23 +37,50 @@ namespace XamarinForms.LocationService.Droid.Services
 				{
                     for (; !_cts.IsCancellationRequested; )
                     {
+
 						Thread.Sleep(5000);
 
 						//현재 시간 구하기
 						DateTime dateTime = DateTime.Now;
+						string AmPm = DateTime.Now.ToString("tt");
+						//string AmPm = "PM";
+
 
 						//현재 요일 구하기
 						string date = dateTime.DayOfWeek.ToString();
-
-						if (((dateTime.Hour > 17 && dateTime.Minute > 50) || dateTime.Hour>18) && (date != "Saturday1" || date != "Sunday"))
+                        if (IsNotiToday == true && whatday != DateTime.Now.Day)
                         {
-							var locShared = new Location();
-							locShared.Run(_cts.Token).Wait();
+							IsNotiToday = false;
+                        }
 
-							if (locShared.ForResult > 0.02)
-							{
+						if (((dateTime.Hour >= 5 && dateTime.Minute >= 50 && AmPm == "PM") || (dateTime.Hour>=6 && AmPm == "PM")) && (date != "Saturday" || date != "Sunday"))
+                        {
+                            if (IsNotiToday == false)
+                            {
+								var locShared = new Location();
+								locShared.Run(_cts.Token).Wait();
 
+								if (locShared.ForResult > 0.02)
+								{
+									try
+									{
+										whatday = DateTime.Now.Day;
+										IsNotiToday = true;
+										new AndroidNotificationManager().ScheduleNotification("HRD-Trigger", "학원을 벗어났습니다( " + (int)(locShared.ForResult * 100) + "m )");
+										var powerManager = (PowerManager)GetSystemService(PowerService);
+										var wakeLock = powerManager.NewWakeLock(WakeLockFlags.ScreenDim | WakeLockFlags.AcquireCausesWakeup, "HRD-GPS Trigger");
+										wakeLock.Acquire();
+										wakeLock.Release();
+
+									}
+									catch (Exception ex)
+									{
+										Debugger.Break();
+
+									}
+								}
 							}
+							
 						}
 						
 					}
@@ -73,6 +103,8 @@ namespace XamarinForms.LocationService.Droid.Services
 
 			return StartCommandResult.Sticky;
 		}
+
+		
 
 		public override void OnDestroy()
 		{

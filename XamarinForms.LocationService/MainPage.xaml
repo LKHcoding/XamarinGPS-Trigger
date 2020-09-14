@@ -16,7 +16,11 @@
                 Text="Stop Service"
                 Command="{Binding EndCommand}"/>
 
-        <Label Text="Coordinates" VerticalOptions="CenterAndExpand" FontSize="Title"/>
+        <Label Text="Powered by LKHcoding" VerticalOptions="CenterAndExpand" FontSize="Title"/>
+        <Label Text="https://github.com/LKHcoding/XamarinGPS-Trigger" VerticalOptions="CenterAndExpand" FontSize="Small"/>
+
+        <Label Text="" VerticalOptions="CenterAndExpand" FontSize="Small"/>
+        <Label Text="HRD-GPS Trigger" VerticalOptions="CenterAndExpand" FontSize="Subtitle"/>
 
         <Label>
             <Label.FormattedText>
