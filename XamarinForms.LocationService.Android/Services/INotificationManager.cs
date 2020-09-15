@@ -80,7 +80,7 @@ namespace XamarinForms.LocationService.Droid.Services
             {
 
                 var channelNameJava = new Java.Lang.String(channelName);
-                var channel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.Default)
+                var channel = new NotificationChannel(channelId, channelNameJava, NotificationImportance.High)
                 {
                     Description = channelDescription
                 };

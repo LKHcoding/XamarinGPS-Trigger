@@ -26,7 +26,7 @@ namespace XamarinForms.LocationService.Services
 					{
 						await Task.Delay(7000);
 
-						var request = new GeolocationRequest(GeolocationAccuracy.High);
+						var request = new GeolocationRequest(GeolocationAccuracy.Default);
 						var location = await Geolocation.GetLocationAsync(request);
 
 
@@ -38,15 +38,17 @@ namespace XamarinForms.LocationService.Services
 								Longitude = location.Longitude
 							};
 
-							//거리 구하는 부분
-							Xamarin.Essentials.Location defaultLocation = new Xamarin.Essentials.Location(35.861270, 128.556045);
+							//거리 구하는 부분 35.8612573164,  128.556113458
+							Xamarin.Essentials.Location defaultLocation = new Xamarin.Essentials.Location(35.8612573164, 128.556113458);
 							Xamarin.Essentials.Location currentLocation = new Xamarin.Essentials.Location(location.Latitude, location.Longitude);
 							double kilometers = Xamarin.Essentials.Location.CalculateDistance(defaultLocation, currentLocation, DistanceUnits.Kilometers);
 
-							ForResult = kilometers;
-                            if (kilometers > 0.02)
+							//미터 단위로 환산
+							ForResult = kilometers*1000;
+
+                            if (ForResult >= 30)
                             {
-								stopping = true;
+                                stopping = true;
                             }
 
 
