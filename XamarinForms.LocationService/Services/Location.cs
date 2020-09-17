@@ -24,7 +24,7 @@ namespace XamarinForms.LocationService.Services
 					token.ThrowIfCancellationRequested();
 					try
 					{
-						await Task.Delay(7000);
+						await Task.Delay(6000);
 
 						var request = new GeolocationRequest(GeolocationAccuracy.Default);
 						var location = await Geolocation.GetLocationAsync(request);
@@ -46,7 +46,7 @@ namespace XamarinForms.LocationService.Services
 							//미터 단위로 환산
 							ForResult = kilometers*1000;
 
-                            if (ForResult >= 30)
+                            if (ForResult >= 25)
                             {
                                 stopping = true;
                             }

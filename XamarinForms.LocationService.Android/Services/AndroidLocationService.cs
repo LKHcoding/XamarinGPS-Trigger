@@ -17,8 +17,8 @@ namespace XamarinForms.LocationService.Droid.Services
     {
         CancellationTokenSource _cts;
         public const int SERVICE_RUNNING_NOTIFICATION_ID = 10023;
-        public bool IsNotiToday = false;
-        public int whatday = 0;
+        static public bool IsNotiToday = false;
+        static public int whatday = 0;
 
         public override IBinder OnBind(Intent intent)
         {
@@ -47,7 +47,7 @@ namespace XamarinForms.LocationService.Droid.Services
                         //wakeLock2.Release();
 
                         //서비스 도는동안 텀주기
-                        Thread.Sleep(7000);
+                        Thread.Sleep(5000);
 
 
                         //현재 시간 구하기
@@ -67,12 +67,13 @@ namespace XamarinForms.LocationService.Droid.Services
 
 
                         //서비스 도는동안 다음날되면 다시 알림 뜰수있도록 초기화
-                        if (IsNotiToday == true && whatday != DateTime.Now.Day)
+                        if (whatday != DateTime.Now.Day)
                         {
                             IsNotiToday = false;
                         }
 
                         //if ((((hour >= 17 && minute >= 50) && (AmPm == "PM" || AmPm == "오후")) || (hour >= 18 && (AmPm == "PM" || AmPm == "오후"))) && !(date == "Saturday" || date == "Sunday"))
+                        
                         if ((((hour >= 17 && minute >= 50)) || (hour >= 18)) && !(date == "Saturday" || date == "Sunday"))
                         {
                             if (IsNotiToday == false)
@@ -80,7 +81,7 @@ namespace XamarinForms.LocationService.Droid.Services
                                 var locShared = new Location();
                                 locShared.Run(_cts.Token).Wait();
 
-                                if (locShared.ForResult >= 30)
+                                if (locShared.ForResult >= 25)
                                 {
                                     try
                                     {
@@ -123,7 +124,7 @@ namespace XamarinForms.LocationService.Droid.Services
                 }
             }, _cts.Token);
 
-            return StartCommandResult.Sticky;
+            return StartCommandResult.RedeliverIntent;
         }
 
 
